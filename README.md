@@ -86,3 +86,27 @@ There are 2 knobs that can be tuned for generation: the number of retrieved capt
 
 where k is the number of captions to condition on and bw is the beam width. These are reasonable defaults but playing around with these can give you very different outputs! The higher the beam width, the longer it takes to generate a story.
 
+## Reference
+
+This project does not have any associated paper with it. If you found this code useful, please consider citing:
+
+Ryan Kiros, Yukun Zhu, Ruslan Salakhutdinov, Richard S. Zemel, Antonio Torralba, Raquel Urtasun, and Sanja Fidler. **"Skip-Thought Vectors."** *arXiv preprint arXiv:1506.06726 (2015).*
+
+    @article{kiros2015skip,
+      title={Skip-Thought Vectors},
+      author={Kiros, Ryan and Zhu, Yukun and Salakhutdinov, Ruslan and Zemel, Richard S and Torralba, Antonio and Urtasun, Raquel and Fidler, Sanja},
+      journal={arXiv preprint arXiv:1506.06726},
+      year={2015}
+    }
+    
+If you also use the BookCorpus data for training new models, please also consider citing:
+
+Yukun Zhu, Ryan Kiros, Richard Zemel, Ruslan Salakhutdinov, Raquel Urtasun, Antonio Torralba, Sanja Fidler.
+**"Aligning Books and Movies: Towards Story-like Visual Explanations by Watching Movies and Reading Books."** *arXiv preprint arXiv:1506.06724 (2015).*
+
+    @article{zhu2015aligning,
+        title={Aligning Books and Movies: Towards Story-like Visual Explanations by Watching Movies and Reading Books},
+        author={Zhu, Yukun and Kiros, Ryan and Zemel, Richard and Salakhutdinov, Ruslan and Urtasun, Raquel and Torralba, Antonio and Fidler, Sanja},
+        journal={arXiv preprint arXiv:1506.06724},
+        year={2015}
+    }
