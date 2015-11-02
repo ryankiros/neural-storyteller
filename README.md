@@ -10,7 +10,7 @@ neural-storyteller is a recurrent neural network that generates little stories a
 
 <br>
 
-<img src="https://github.com/ryankiros/neural-storyteller/blob/master/images/ex2.jpg" height="200px" align="left">
+<img src="https://github.com/ryankiros/neural-storyteller/blob/master/images/ex2.jpg" height="220px" align="left">
 
 *Naturally the vase had been put aside , and I took in a deep breath of my favorite color . I wanted to tell her that I was in love with her , but I could only imagine what it would be for me to leave her here . The scent of roses filled the air as they entered the room , making it seem as though he 'd spoken with her a few times . In fact , I was afraid he was going to be part of the court . Her long , pale hair fell over her shoulders and she cried out . So much like the vase of flowers , that I had no choice and held onto mine .*
 
