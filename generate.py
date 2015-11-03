@@ -54,7 +54,7 @@ path_to_posbias = '/ais/gobi3/u/rkiros/storyteller/romance_style.npy'
 
 #-----------------------------------------------------------------------------#
 
-def story(z, image_loc, k=1000, bw=50):
+def story(z, image_loc, k=100, bw=50):
     """
     Generate a story for an image at location image_loc
     """
