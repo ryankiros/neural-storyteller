@@ -91,6 +91,19 @@ There are 2 knobs that can be tuned for generation: the number of retrieved capt
 
 where k is the number of captions to condition on and bw is the beam width. These are reasonable defaults but playing around with these can give you very different outputs! The higher the beam width, the longer it takes to generate a story.
 
+If you bias by song lyrics, you can turn on the lyric flag which will print the output in multiple lines by comma delimiting. `neural_storyteller.zip` contains an additional bias vector called `swift_style.npy` which is the mean of skip-thought vectors across Taylor Swift lyrics. If you point `path_to_posbias` to this vector in `generate.py`, you can generate captions in the style of Taylor Swift lyrics. For example:
+
+    generate.story(z, './images/ex1.jpg', lyric=True)
+    
+should output
+
+    You re the only person on the beach right now
+    you know
+    I do n't think I will ever fall in love with you
+    and when the sea breeze hits me
+    I thought
+    Hey
+    
 ## Reference
 
 This project does not have any associated paper with it. If you found this code useful, please consider citing:
