@@ -2,31 +2,12 @@
 
 neural-storyteller is a recurrent neural network that generates little stories about images. This repository contains code for generating stories with your own images, as well as instructions for training new models.
 
-## Examples
-
 <img src="https://github.com/ryankiros/neural-storyteller/blob/master/images/ex1.jpg" height="200px" align="left">
-
-*Few people were able to catch the beach , not at the moment . I felt a jolt of emotion pass through my body , as if the beach had turned out to be the ocean . She was so beautiful , and she had no idea what he wanted to do with her . I 've never done that before , but I m pretty sure it 's the only way for me . The sun was coming up on the horizon , leaving trails of San Diego and his friends . She could hardly talk to the locals , who danced in the distance .*
-
-<br>
-
-<img src="https://github.com/ryankiros/neural-storyteller/blob/master/images/ex2.jpg" height="230px" align="left">
-
-*Naturally the vase had been put aside , and I took in a deep breath of my favorite color . I wanted to tell her that I was in love with her , but I could only imagine what it would be for me to leave her here . The scent of roses filled the air as they entered the room , making it seem as though he 'd spoken with her a few times . In fact , I was afraid he was going to be part of the court . Her long , pale hair fell over her shoulders and she cried out . So much like the vase of flowers , that I had no choice and held onto mine .*
+*We were barely able to catch the breeze at the beach , and it felt as if someone stepped out of my mind . She was in love with him for the first time in months , so she had no intention of escaping . The sun had risen from the ocean , making her feel more alive than normal . She 's beautiful , but the truth is that I do n't know what to do . The sun was just starting to fade away , leaving people scattered around the Atlantic Ocean . I d seen the men in his life , who guided me at the beach once more .*
 
 <br>
 
-<img src="https://github.com/ryankiros/neural-storyteller/blob/master/images/ex3.jpg" height="200px" width="212px" align="left">
-
-*Sherry 's plate of food , and I took a deep breath to fill my mouth with the rest of the dinner . The last thing I wanted was to be polite , but I did n't know how long it would be for him to leave . I had no appetite , she reminded me . After a few minutes of digging into my food , I picked up the tray that had been placed on the table . My eyes watered , and I began to laugh as if that was the case . Apparently , she and I spent more time on a platter of food than I understood .*
-
-<br>
-
-<img src="https://github.com/ryankiros/neural-storyteller/blob/master/images/ex4.jpg" height="220px" align="left">
-
-*By the time I pulled out of the city lights , I could see stars flashing in the sky . It was a lot more difficult than it had been for so long , and I had no idea what to say . The last thing I wanted to do was search through the streets of London . As soon as he met mine , he reminded me that she 'd be gone , and that was the most beautiful thing in the world . In my peripheral vision , I drew a deep breath and looked at Sofia . She had nothing to worry about but judging by the lights , it kept building at night .*
-
-<br>
+Some more results from an older model trained on Adventure books can be found [here](http://www.cs.toronto.edu/~rkiros/adv_L.html).
 
 The whole approach contains 4 components:
 * [skip-thought vectors](https://github.com/ryankiros/skip-thoughts)
@@ -108,7 +89,7 @@ If everything works, it will first print out the nearest COCO captions to the im
 
 There are 2 knobs that can be tuned for generation: the number of retrieved captions to condition on as well as the beam search width. The defaults are
 
-    generate.story(z, './images/ex1.jpg', k=1000, bw=50)
+    generate.story(z, './images/ex1.jpg', k=100, bw=50)
 
 where k is the number of captions to condition on and bw is the beam width. These are reasonable defaults but playing around with these can give you very different outputs! The higher the beam width, the longer it takes to generate a story.
 
