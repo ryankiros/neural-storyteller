@@ -54,7 +54,7 @@ path_to_posbias = '/ais/gobi3/u/rkiros/storyteller/romance_style.npy'
 
 #-----------------------------------------------------------------------------#
 
-def story(z, image_loc, k=100, bw=50):
+def story(z, image_loc, k=100, bw=50, lyric=False):
     """
     Generate a story for an image at location image_loc
     """
@@ -87,7 +87,14 @@ def story(z, image_loc, k=100, bw=50):
     # Generate story conditioned on shift
     passage = decoder.run_sampler(z['dec'], shift, beam_width=bw)
     print 'OUTPUT: '
-    print passage
+    if lyric:
+        for line in passage.split(','):
+            if line[0] != ' ':
+                print line
+            else:
+                print line[1:]
+    else:
+        print passage
 
    
 def load_all():
