@@ -59,6 +59,8 @@ This code is written in python. To use it you will need:
 * [Lasagne](https://github.com/Lasagne/Lasagne)
 * A version of Theano that Lasagne supports
 
+Note that a GPU is required.
+
 ## Getting started
 
 You will first need to download some pre-trained models and style vectors. Most of the materials are available in a single compressed file, which you can obtain by running
