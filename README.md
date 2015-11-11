@@ -75,7 +75,7 @@ Finally, we need the VGG-19 ConvNet parameters. You can obtain them by running
 
     wget https://s3.amazonaws.com/lasagne/recipes/pretrained/imagenet/vgg19.pkl
 
-Note that this model is for non-commercial use only. Once you have all the materials, open `generate.py` and specify the locations of all of the models and style vectors that you downloaded.
+Note that this model is for non-commercial use only. Once you have all the materials, open `config.py` and specify the locations of all of the models and style vectors that you downloaded.
 
 ## Generating a story
 
@@ -95,7 +95,7 @@ There are 2 knobs that can be tuned for generation: the number of retrieved capt
 
 where k is the number of captions to condition on and bw is the beam width. These are reasonable defaults but playing around with these can give you very different outputs! The higher the beam width, the longer it takes to generate a story.
 
-If you bias by song lyrics, you can turn on the lyric flag which will print the output in multiple lines by comma delimiting. `neural_storyteller.zip` contains an additional bias vector called `swift_style.npy` which is the mean of skip-thought vectors across Taylor Swift lyrics. If you point `path_to_posbias` to this vector in `generate.py`, you can generate captions in the style of Taylor Swift lyrics. For example:
+If you bias by song lyrics, you can turn on the lyric flag which will print the output in multiple lines by comma delimiting. `neural_storyteller.zip` contains an additional bias vector called `swift_style.npy` which is the mean of skip-thought vectors across Taylor Swift lyrics. If you point `path_to_posbias` to this vector in `config.py`, you can generate captions in the style of Taylor Swift lyrics. For example:
 
     generate.story(z, './images/ex1.jpg', lyric=True)
     
