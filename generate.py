@@ -27,6 +27,8 @@ from PIL import Image
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
+FLAG_CPU_MODE = False
+
 #-----------------------------------------------------------------------------#
 # Specify model paths and biases here
 #-----------------------------------------------------------------------------#
@@ -57,7 +59,7 @@ path_to_posbias = '/ais/gobi3/u/rkiros/storyteller/romance_style.npy'
 
 #-----------------------------------------------------------------------------#
 
-def story(z, image_loc, k=100, bw=50, lyric=False, cpu=False):
+def story(z, image_loc, k=100, bw=50, lyric=False):
     """
     Generate a story for an image at location image_loc
     """
@@ -65,7 +67,7 @@ def story(z, image_loc, k=100, bw=50, lyric=False, cpu=False):
     rawim, im = load_image(image_loc)
 
     # Run image through convnet
-    feats = compute_features(z['net'], im, cpu).flatten()
+    feats = compute_features(z['net'], im).flatten()
     feats /= norm(feats)
 
     # Embed image into joint space
@@ -100,7 +102,7 @@ def story(z, image_loc, k=100, bw=50, lyric=False, cpu=False):
         print passage
 
 
-def load_all(cpu=False):
+def load_all():
     """
     Load everything we need for generating
     """
@@ -120,7 +122,7 @@ def load_all(cpu=False):
 
     # VGG-19
     print 'Loading and initializing ConvNet...'
-    if cpu:
+    if FLAG_CPU_MODE:
         sys.path.insert(0, caffe_path)
         import caffe
         caffe.set_mode_cpu()
@@ -191,11 +193,11 @@ def load_image(file_name):
     im = im - MEAN_VALUE
     return rawim, floatX(im[numpy.newaxis])
 
-def compute_features(net, im, cpu=False):
+def compute_features(net, im):
     """
     Compute fc7 features for im
     """
-    if cpu:
+    if FLAG_CPU_MODE:
         net.blobs['data'].reshape(* im.shape)
         net.blobs['data'].data[...] = im
         net.forward()
