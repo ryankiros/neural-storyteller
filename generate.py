@@ -11,6 +11,8 @@ import skipthoughts
 import decoder
 import embedding
 
+from config import paths
+
 import lasagne
 from lasagne.layers import InputLayer, DenseLayer, NonlinearityLayer, DropoutLayer
 from lasagne.layers.corrmm import Conv2DMMLayer as ConvLayer
@@ -27,32 +29,6 @@ from PIL import Image
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-#-----------------------------------------------------------------------------#
-# Specify model paths and biases here
-#-----------------------------------------------------------------------------#
-
-# Skip-thoughts
-path_to_skmodels = '/u/rkiros/public_html/models/'
-path_to_sktables = '/u/rkiros/public_html/models/'
-
-# Decoder
-path_to_decmodel = '/ais/gobi3/u/rkiros/storyteller/romance.npz'
-path_to_dictionary = '/ais/gobi3/u/rkiros/storyteller/romance_dictionary.pkl'
-
-# Image-sentence embedding
-path_to_vsemodel = '/ais/gobi3/u/rkiros/storyteller/coco_embedding.npz'
-
-# VGG-19 convnet
-path_to_vgg = '/ais/gobi3/u/rkiros/vgg/vgg19.pkl'
-
-# COCO training captions
-path_to_captions = '/ais/gobi3/u/rkiros/storyteller/coco_train_caps.txt'
-
-# Biases
-path_to_negbias = '/ais/gobi3/u/rkiros/storyteller/caption_style.npy'
-path_to_posbias = '/ais/gobi3/u/rkiros/storyteller/romance_style.npy'
-
-#-----------------------------------------------------------------------------#
 
 def story(z, image_loc, k=100, bw=50, lyric=False):
     """
@@ -101,28 +77,28 @@ def load_all():
     """
     Load everything we need for generating
     """
-    print path_to_decmodel
+    print paths['decmodel']
 
     # Skip-thoughts
     print 'Loading skip-thoughts...'
-    stv = skipthoughts.load_model(path_to_skmodels, path_to_sktables)
+    stv = skipthoughts.load_model(paths['skmodels'], paths['sktables'])
 
     # Decoder
     print 'Loading decoder...'
-    dec = decoder.load_model(path_to_decmodel, path_to_dictionary)
+    dec = decoder.load_model(paths['decmodel'], paths['dictionary'])
 
     # Image-sentence embedding
     print 'Loading image-sentence embedding...'
-    vse = embedding.load_model(path_to_vsemodel)
+    vse = embedding.load_model(paths['vsemodel'])
 
     # VGG-19
     print 'Loading and initializing ConvNet...'
-    net = build_convnet(path_to_vgg)
+    net = build_convnet(paths['vgg'])
 
     # Captions
     print 'Loading captions...'
     cap = []
-    with open(path_to_captions, 'rb') as f:
+    with open(paths['captions'], 'rb') as f:
         for line in f:
             cap.append(line.strip())
 
@@ -132,8 +108,8 @@ def load_all():
 
     # Biases
     print 'Loading biases...'
-    bneg = numpy.load(path_to_negbias)
-    bpos = numpy.load(path_to_posbias)
+    bneg = numpy.load(paths['negbias'])
+    bpos = numpy.load(paths['posbias'])
 
     # Pack up
     z = {}
