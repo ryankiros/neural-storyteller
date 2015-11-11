@@ -44,6 +44,9 @@ path_to_vsemodel = '/ais/gobi3/u/rkiros/storyteller/coco_embedding.npz'
 
 # VGG-19 convnet
 path_to_vgg = '/ais/gobi3/u/rkiros/vgg/vgg19.pkl'
+caffe_path = '/u/yukun/Projects/caffe-run/python'
+path_to_vgg_proto_caffe = '/ais/guppy9/movie2text/neural-storyteller/models/VGG_ILSVRC_19_layers_deploy.prototxt'
+path_to_vgg_model_caffe = '/ais/guppy9/movie2text/neural-storyteller/models/VGG_ILSVRC_19_layers.caffemodel'
 
 # COCO training captions
 path_to_captions = '/ais/gobi3/u/rkiros/storyteller/coco_train_caps.txt'
@@ -54,7 +57,7 @@ path_to_posbias = '/ais/gobi3/u/rkiros/storyteller/romance_style.npy'
 
 #-----------------------------------------------------------------------------#
 
-def story(z, image_loc, k=100, bw=50, lyric=False):
+def story(z, image_loc, k=100, bw=50, lyric=False, cpu=False):
     """
     Generate a story for an image at location image_loc
     """
@@ -62,7 +65,7 @@ def story(z, image_loc, k=100, bw=50, lyric=False):
     rawim, im = load_image(image_loc)
 
     # Run image through convnet
-    feats = compute_features(z['net'], im).flatten()
+    feats = compute_features(z['net'], im, cpu).flatten()
     feats /= norm(feats)
 
     # Embed image into joint space
@@ -96,8 +99,8 @@ def story(z, image_loc, k=100, bw=50, lyric=False):
     else:
         print passage
 
-   
-def load_all():
+
+def load_all(cpu=False):
     """
     Load everything we need for generating
     """
@@ -117,7 +120,14 @@ def load_all():
 
     # VGG-19
     print 'Loading and initializing ConvNet...'
-    net = build_convnet(path_to_vgg)
+    if cpu:
+        sys.path.insert(0, caffe_path)
+        import caffe
+        caffe.set_mode_cpu()
+        net = caffe.Net(path_to_vgg_proto_caffe, path_to_vgg_model_caffe,
+                        caffe.TEST)
+    else:
+        net = build_convnet(path_to_vgg)
 
     # Captions
     print 'Loading captions...'
@@ -181,11 +191,18 @@ def load_image(file_name):
     im = im - MEAN_VALUE
     return rawim, floatX(im[numpy.newaxis])
 
-def compute_features(net, im):
+def compute_features(net, im, cpu=False):
     """
     Compute fc7 features for im
     """
-    fc7 = numpy.array(lasagne.layers.get_output(net['fc7'], im, deterministic=True).eval())
+    if cpu:
+        net.blobs['data'].reshape(* im.shape)
+        net.blobs['data'].data[...] = im
+        net.forward()
+        fc7 = net.blobs['fc7'].data
+    else:
+        fc7 = numpy.array(lasagne.layers.get_output(net['fc7'], im,
+                                                    deterministic=True).eval())
     return fc7
 
 def build_convnet(path_to_vgg):
