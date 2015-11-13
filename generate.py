@@ -11,12 +11,15 @@ import skipthoughts
 import decoder
 import embedding
 
+import config
+
 import lasagne
 from lasagne.layers import InputLayer, DenseLayer, NonlinearityLayer, DropoutLayer
-from lasagne.layers.corrmm import Conv2DMMLayer as ConvLayer
 from lasagne.layers import MaxPool2DLayer as PoolLayer
 from lasagne.nonlinearities import softmax
 from lasagne.utils import floatX
+if not config.FLAG_CPU_MODE:
+    from lasagne.layers.corrmm import Conv2DMMLayer as ConvLayer
 
 from scipy import optimize, stats
 from collections import OrderedDict, defaultdict, Counter
@@ -27,37 +30,6 @@ from PIL import Image
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-FLAG_CPU_MODE = False
-
-#-----------------------------------------------------------------------------#
-# Specify model paths and biases here
-#-----------------------------------------------------------------------------#
-
-# Skip-thoughts
-path_to_skmodels = '/u/rkiros/public_html/models/'
-path_to_sktables = '/u/rkiros/public_html/models/'
-
-# Decoder
-path_to_decmodel = '/ais/gobi3/u/rkiros/storyteller/romance.npz'
-path_to_dictionary = '/ais/gobi3/u/rkiros/storyteller/romance_dictionary.pkl'
-
-# Image-sentence embedding
-path_to_vsemodel = '/ais/gobi3/u/rkiros/storyteller/coco_embedding.npz'
-
-# VGG-19 convnet
-path_to_vgg = '/ais/gobi3/u/rkiros/vgg/vgg19.pkl'
-caffe_path = '/u/yukun/Projects/caffe-run/python'
-path_to_vgg_proto_caffe = '/ais/guppy9/movie2text/neural-storyteller/models/VGG_ILSVRC_19_layers_deploy.prototxt'
-path_to_vgg_model_caffe = '/ais/guppy9/movie2text/neural-storyteller/models/VGG_ILSVRC_19_layers.caffemodel'
-
-# COCO training captions
-path_to_captions = '/ais/gobi3/u/rkiros/storyteller/coco_train_caps.txt'
-
-# Biases
-path_to_negbias = '/ais/gobi3/u/rkiros/storyteller/caption_style.npy'
-path_to_posbias = '/ais/gobi3/u/rkiros/storyteller/romance_style.npy'
-
-#-----------------------------------------------------------------------------#
 
 def story(z, image_loc, k=100, bw=50, lyric=False):
     """
@@ -106,35 +78,39 @@ def load_all():
     """
     Load everything we need for generating
     """
-    print path_to_decmodel
+    print config.paths['decmodel']
 
     # Skip-thoughts
     print 'Loading skip-thoughts...'
-    stv = skipthoughts.load_model(path_to_skmodels, path_to_sktables)
+    stv = skipthoughts.load_model(config.paths['skmodels'],
+                                  config.paths['sktables'])
 
     # Decoder
     print 'Loading decoder...'
-    dec = decoder.load_model(path_to_decmodel, path_to_dictionary)
+    dec = decoder.load_model(config.paths['decmodel'],
+                             config.paths['dictionary'])
 
     # Image-sentence embedding
     print 'Loading image-sentence embedding...'
-    vse = embedding.load_model(path_to_vsemodel)
+    vse = embedding.load_model(config.paths['vsemodel'])
 
     # VGG-19
     print 'Loading and initializing ConvNet...'
-    if FLAG_CPU_MODE:
-        sys.path.insert(0, caffe_path)
+
+    if config.FLAG_CPU_MODE:
+        sys.path.insert(0, config.paths['pycaffe'])
         import caffe
         caffe.set_mode_cpu()
-        net = caffe.Net(path_to_vgg_proto_caffe, path_to_vgg_model_caffe,
+        net = caffe.Net(config.paths['vgg_proto_caffe'],
+                        config.paths['vgg_model_caffe'],
                         caffe.TEST)
     else:
-        net = build_convnet(path_to_vgg)
+        net = build_convnet(config.paths['vgg'])
 
     # Captions
     print 'Loading captions...'
     cap = []
-    with open(path_to_captions, 'rb') as f:
+    with open(config.paths['captions'], 'rb') as f:
         for line in f:
             cap.append(line.strip())
 
@@ -144,8 +120,8 @@ def load_all():
 
     # Biases
     print 'Loading biases...'
-    bneg = numpy.load(path_to_negbias)
-    bpos = numpy.load(path_to_posbias)
+    bneg = numpy.load(config.paths['negbias'])
+    bpos = numpy.load(config.paths['posbias'])
 
     # Pack up
     z = {}
@@ -197,7 +173,7 @@ def compute_features(net, im):
     """
     Compute fc7 features for im
     """
-    if FLAG_CPU_MODE:
+    if config.FLAG_CPU_MODE:
         net.blobs['data'].reshape(* im.shape)
         net.blobs['data'].data[...] = im
         net.forward()
