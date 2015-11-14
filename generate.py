@@ -11,14 +11,15 @@ import skipthoughts
 import decoder
 import embedding
 
-from config import paths
+import config
 
 import lasagne
 from lasagne.layers import InputLayer, DenseLayer, NonlinearityLayer, DropoutLayer
-from lasagne.layers.corrmm import Conv2DMMLayer as ConvLayer
 from lasagne.layers import MaxPool2DLayer as PoolLayer
 from lasagne.nonlinearities import softmax
 from lasagne.utils import floatX
+if not config.FLAG_CPU_MODE:
+    from lasagne.layers.corrmm import Conv2DMMLayer as ConvLayer
 
 from scipy import optimize, stats
 from collections import OrderedDict, defaultdict, Counter
@@ -72,33 +73,44 @@ def story(z, image_loc, k=100, bw=50, lyric=False):
     else:
         print passage
 
-   
+
 def load_all():
     """
     Load everything we need for generating
     """
-    print paths['decmodel']
+    print config.paths['decmodel']
 
     # Skip-thoughts
     print 'Loading skip-thoughts...'
-    stv = skipthoughts.load_model(paths['skmodels'], paths['sktables'])
+    stv = skipthoughts.load_model(config.paths['skmodels'],
+                                  config.paths['sktables'])
 
     # Decoder
     print 'Loading decoder...'
-    dec = decoder.load_model(paths['decmodel'], paths['dictionary'])
+    dec = decoder.load_model(config.paths['decmodel'],
+                             config.paths['dictionary'])
 
     # Image-sentence embedding
     print 'Loading image-sentence embedding...'
-    vse = embedding.load_model(paths['vsemodel'])
+    vse = embedding.load_model(config.paths['vsemodel'])
 
     # VGG-19
     print 'Loading and initializing ConvNet...'
-    net = build_convnet(paths['vgg'])
+
+    if config.FLAG_CPU_MODE:
+        sys.path.insert(0, config.paths['pycaffe'])
+        import caffe
+        caffe.set_mode_cpu()
+        net = caffe.Net(config.paths['vgg_proto_caffe'],
+                        config.paths['vgg_model_caffe'],
+                        caffe.TEST)
+    else:
+        net = build_convnet(config.paths['vgg'])
 
     # Captions
     print 'Loading captions...'
     cap = []
-    with open(paths['captions'], 'rb') as f:
+    with open(config.paths['captions'], 'rb') as f:
         for line in f:
             cap.append(line.strip())
 
@@ -108,8 +120,8 @@ def load_all():
 
     # Biases
     print 'Loading biases...'
-    bneg = numpy.load(paths['negbias'])
-    bpos = numpy.load(paths['posbias'])
+    bneg = numpy.load(config.paths['negbias'])
+    bpos = numpy.load(config.paths['posbias'])
 
     # Pack up
     z = {}
@@ -161,7 +173,14 @@ def compute_features(net, im):
     """
     Compute fc7 features for im
     """
-    fc7 = numpy.array(lasagne.layers.get_output(net['fc7'], im, deterministic=True).eval())
+    if config.FLAG_CPU_MODE:
+        net.blobs['data'].reshape(* im.shape)
+        net.blobs['data'].data[...] = im
+        net.forward()
+        fc7 = net.blobs['fc7'].data
+    else:
+        fc7 = numpy.array(lasagne.layers.get_output(net['fc7'], im,
+                                                    deterministic=True).eval())
     return fc7
 
 def build_convnet(path_to_vgg):
